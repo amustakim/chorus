@@ -87,8 +87,8 @@ div[data-page="Dashboard"], div[data-page="UserDashboardEdit"] {
     }
 
     .module_header {
-        @include toggle-menus;
-        height: $title-height;
+        //@include toggle-menus;
+        min-height: $title-height;
         line-height: $title-height;
     }
 }

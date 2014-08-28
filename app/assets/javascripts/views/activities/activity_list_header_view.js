@@ -5,8 +5,7 @@ chorus.views.ActivityListHeader = chorus.views.Base.extend({
     persistent: true,
 
     events: {
-        "click .all":     "onAllClicked",
-        "click .insights": "onInsightsClicked"
+        "change .activities_filter": "onFilterChange"
     },
 
     subviews: {
@@ -14,25 +13,27 @@ chorus.views.ActivityListHeader = chorus.views.Base.extend({
     },
 
     setup: function() {
-        this.subscribePageEvent("note:deleted", this.updateInsightCount);
-        this.subscribePageEvent("insight:promoted", this.updateInsightCount);
-
         if(!this.collection) {
             this.collection = this.model.activities();
         }
-
-        this.countInsights();
 
         this.allTitle = this.options.allTitle;
         this.insightsTitle = this.options.insightsTitle;
         this.tagBox = this.options.tagBox;
     },
 
+    postRender: function() {
+
+        _.defer(_.bind(function () {
+            chorus.styleSelect(this.selectElement());
+        }, this));
+        var value = this.collection.attributes.insights ? "only_insights" : "all_activity";
+        this.selectElement().val(value);
+    },
+
     additionalContext: function() {
         return {
             title: this.pickTitle(),
-            showInsights: this.collection.attributes.insights,
-            insightCount: this.insightsCount.totalRecordCount(),
             iconUrl: this.model && this.model.defaultIconUrl(),
             tagBox: this.tagBox
         };
@@ -42,20 +43,6 @@ chorus.views.ActivityListHeader = chorus.views.Base.extend({
         return this.collection.attributes.insights ? this.insightsTitle : this.allTitle;
     },
 
-    updateInsightCount: function() {
-        this.insightsCount.fetchPage(1, {per_page: 0});
-    },
-
-    countInsights: function () {
-        this.insightsCount = this.collection.clone();
-        this.insightsCount.attributes.entity = this.collection.attributes.entity;
-        this.insightsCount.attributes.insights = true;
-        this.updateInsightCount();
-        this.listenTo(this.insightsCount, "loaded", this.render);
-
-        this.requiredResources.add(this.insightsCount);
-    },
-
     reloadCollection: function() {
         this.collection.loaded = false;
         this.collection.reset();
@@ -63,18 +50,18 @@ chorus.views.ActivityListHeader = chorus.views.Base.extend({
         this.render();
     },
 
-
-    onAllClicked: function(e) {
+    onFilterChange: function(e) {
         e && e.preventDefault();
 
-        this.collection.attributes.insights = false;
+        this.collection.attributes.insights = this.isInsightsOnly();
         this.reloadCollection();
     },
 
-    onInsightsClicked: function(e) {
-        e && e.preventDefault();
+    isInsightsOnly: function() {
+        return this.selectElement().val() === "only_insights";
+    },
 
-        this.collection.attributes.insights = true;
-        this.reloadCollection();
+    selectElement: function() {
+        return this.$("select.activities_filter");
     }
 });

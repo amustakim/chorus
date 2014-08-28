@@ -1,14 +1,3 @@
-<div class="menus">
-    <span class="filter">{{t "filter.show"}}</span>
-    <a href="#" class="all {{#unless showInsights}}active{{/unless}}">{{t "filter.all_activity"}}</a>
-    <span class="separator">|</span>
-    <a href="#" class="insights {{#if showInsights}}active{{/if}}">{{t "filter.only_insights"}}</a>
-
-    <div class="badge">
-        <div class="left"/><div class="center">{{ insightCount }}</div><div class="right"/>
-    </div>
-</div>
-
 <div class="title">
     {{#if iconUrl}}
         <img src="{{iconUrl}}"/>
@@ -19,4 +8,10 @@
              <div class="tag_box"></div>
         {{/if}}
     </div>
+</div>
+<div class="menus">
+    <select class="activities_filter">
+        <option value="all_activity">{{t "filter.all_activity"}}</option>
+        <option value="only_insights">{{t "filter.only_insights"}}</option>
+    </select>
 </div>
