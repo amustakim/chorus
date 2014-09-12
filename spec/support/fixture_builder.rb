@@ -691,6 +691,12 @@ FixtureBuilder.configure do |fbuilder|
       FactoryGirl.create(:jdbc_schema, :name => JdbcIntegration.schema_name, :data_source => real_jdbc_data_source)
     end
 
+    if ENV['MARIADB_HOST']
+      mariadb_jdbc_data_source = FactoryGirl.create(:jdbc_data_source, :owner => owner, :host => MariadbIntegration.hostname, :db_username => MariadbIntegration.username, :db_password => MariadbIntegration.password)
+      MariadbIntegration.setup_test_schemas
+      FactoryGirl.create(:jdbc_schema, :name => MariadbIntegration.schema_name, :data_source => mariadb_jdbc_data_source)
+    end
+
     if ENV['HAWQ_HOST']
       FactoryGirl.create(:gpdb_data_source, HawqIntegration.data_source_config(HawqIntegration.hostname).merge(:name => HawqIntegration.hostname, :owner => admin))
     end

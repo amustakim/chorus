@@ -58,10 +58,14 @@ data_sources:
         db_username: "system"
         db_password: "password"
   jdbc:
-    - host: "jdbc:teradata://10.0.0.63/dbc"
+    - host: "jdbc:teradata://10.0.0.46/dbc"
       account:
         db_username: "dbc"
         db_password: "dbc"
+    - host: "jdbc:mariadb://192.168.51.50"
+      account:
+        db_username: "root"
+        db_password: "secret"
   hawq:
     - host: "phd20a.alpinenow.local"
       port: 5432

@@ -20,6 +20,38 @@ class JdbcConnection < DataSourceConnection
     end
   end
 
+  module MariaOverrides
+    def schemas
+      with_connection do |connection|
+        ss = []
+        connection.process_metadata(:getCatalogs) do |h|
+          ss << h[:table_cat] unless @schema_blacklist.include?(h[:table_cat])
+        end
+        ss
+      end
+    end
+
+    def metadata_for_dataset(dataset_name)
+      column_count = with_connection do |connection|
+        connection.to_enum(:process_metadata, :getColumns, schema_name, nil, dataset_name, nil).count
+      end
+      {:column_count => column_count}
+    end
+
+    private
+
+    def metadata_get_tables(types, opts, &block)
+      with_connection do |connection|
+        connection.process_metadata(:getTables, opts[:schema], opts[:schema], opts[:table_name], types.to_java(:string), &block)
+      end
+    end
+  end
+
+  def initialize(data_source, account, options)
+    super
+    self.extend(MariaOverrides) if /jdbc:mariadb:/ =~ db_url
+  end
+
   def db_url
     @data_source.url
   end
@@ -129,8 +161,8 @@ class JdbcConnection < DataSourceConnection
 
   def table_type?(type)
     case type
-      when 'TABLE' then 't'
-      when 'VIEW' then 'v'
+      when 'TABLE', 'BASE TABLE' then 't'
+      when 'VIEW', 'SYSTEM VIEW' then 'v'
       else nil
     end
   end

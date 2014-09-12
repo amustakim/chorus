@@ -25,11 +25,18 @@ RSpec.configure do |config|
   end
 
   unless ENV['HAWQ_HOST']
+    warn "No HAWQ data source detected in environment variable 'HAWQ_HOST'.  Skipping HAWQ integration tests"
     config.filter_run_excluding :hawq_integration => true
   end
 
   unless ENV['JDBC_HOST']
+    warn "No JDBC data source detected in environment variable 'JDBC_HOST'.  Skipping JDBC integration tests"
     config.filter_run_excluding :jdbc_integration => true
+  end
+
+  unless ENV['MARIADB_HOST']
+    warn "No MariaDB data source detected in environment variable 'MARIADB_HOST'.  Skipping MariaDB integration tests"
+    config.filter_run_excluding :mariadb_integration => true
   end
 
   unless ENV['PG_HOST']
