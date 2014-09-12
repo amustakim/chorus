@@ -632,7 +632,6 @@ describe JdbcConnection do
       end
 
       describe '#column_info' do
-        let(:table_name) { 'NEWTABLE' }
         let(:columns_sql) do
           <<-SQL
             SELECT
@@ -644,6 +643,8 @@ describe JdbcConnection do
             ORDINAL_POSITION,
             CASE WHEN COLUMN_TYPE='varchar(20)' THEN 'VARCHAR'
                  WHEN COLUMN_TYPE='int(11)' THEN 'INT'
+                 WHEN COLUMN_TYPE='decimal(10,0)' THEN 'DECIMAL'
+                 ELSE COLUMN_TYPE
             END AS COLUMN_TYPE
             FROM information_schema.columns
             WHERE table_schema=:schema AND table_name=:table ) TBL ORDER BY ORDINAL_POSITION
@@ -655,7 +656,17 @@ describe JdbcConnection do
 
         let(:subject) { connection.column_info(table_name, 'ignored setup sql to be consistent with other datasource connections') }
 
-        it_should_behave_like 'a well-behaved database query'
+        context 'with an all caps table' do
+          let(:table_name) { 'NEWTABLE' }
+
+          it_should_behave_like 'a well-behaved database query'
+        end
+
+        context 'with a lowercase table' do
+          let(:table_name) { 'lowercase_table' }
+
+          it_should_behave_like 'a well-behaved database query'
+        end
       end
 
       context 'Sequel column parsing' do

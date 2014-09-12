@@ -1,4 +1,8 @@
 SET SESSION sql_mode='ANSI';
+
+
+<% [schema_name, "#{schema_name}_2"].each do |schema_name| %>
+
 CREATE SCHEMA "<%= schema_name %>";
 
 CREATE TABLE "<%= schema_name %>".NEWERTABLE (id INTEGER);
@@ -27,6 +31,6 @@ CREATE VIEW "<%= schema_name %>"."lowercase_view" AS SELECT * FROM "<%= schema_n
   INSERT INTO "<%= schema_name %>"."base_table1" VALUES ( 7,1,7, 'papaya' , '2012-05-11 00:10:02');
   INSERT INTO "<%= schema_name %>"."base_table1" VALUES ( 8,1,8, 'papaya' , '2012-04-09 00:00:02');
 
-
-CREATE SCHEMA "<%= schema_name %>_2";
-CREATE TABLE "<%= schema_name %>_2".TWO_COLUMN_TABLE ("id" NUMERIC, "column2" NUMERIC);
+<% end %>
+-- CREATE SCHEMA "<%= schema_name %>_2";
+-- CREATE TABLE "<%= schema_name %>_2".TWO_COLUMN_TABLE ("id" NUMERIC, "column2" NUMERIC);
